@@ -1,0 +1,18 @@
+# Ignore the virtual environment folder
+royalvenv/
+
+# Ignore Python bytecode files
+*.pyc
+*.pyo
+__pycache__/
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore IDE/editor files
+.vscode/
+.idea/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
