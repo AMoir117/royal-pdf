@@ -7,8 +7,13 @@ import re
 from tqdm import tqdm
 import os
 
+###################### CHANGE THESE #################################
 BOOK_URL = "https://www.royalroad.com/fiction/21220/mother-of-learning"
-BOOK_NAME = "Mother_of_Learning"
+BOOK_NAME = "Mother of Learning"
+WKHTMLTOPDF_PATH = "C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe"
+#####################################################################
+
+
 BOOK_FOLDER = "books"
 TEMP_HTML_FILE = "temp_book.html"
 TIME_DELAY = 0.1
@@ -22,7 +27,14 @@ toc = {
 }
 
 options = {
-	
+    'page-width': '6in',
+    'page-height': '9in',
+    'margin-top': '0.75in',
+    'margin-right': '0.75in',
+    'margin-bottom': '0.75in',
+    'margin-left': '0.75in',
+    'encoding': 'UTF-8',
+    'disable-smart-shrinking': ''
 }
 
 def extract_chapter_slugs_and_ids(url):
@@ -107,7 +119,7 @@ def main():
         f.write(full_html)
 
     # Convert HTML file to PDF with TOC
-    config = pdfkit.configuration(wkhtmltopdf="C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe")
+    config = pdfkit.configuration(wkhtmltopdf=WKHTMLTOPDF_PATH)
     pdfkit.from_file(
         TEMP_HTML_FILE,
         f"{BOOK_FOLDER}/{BOOK_NAME}.pdf",
