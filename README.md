@@ -24,7 +24,7 @@ python -m venv royalvenv
 
 # Activate the virtual environment
 # On Windows:
-royalvenv\Scriptsctivate
+royalvenv\Scripts\Activate
 # On macOS/Linux:
 source royalvenv/bin/activate
 ```

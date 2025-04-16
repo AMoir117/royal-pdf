@@ -4,18 +4,26 @@ import pdfkit
 import time
 from lxml import html
 import re
+from tqdm import tqdm
+import os
 
-BASE_URL = "https://www.royalroad.com"
 BOOK_URL = "https://www.royalroad.com/fiction/21220/mother-of-learning"
 BOOK_NAME = "Mother_of_Learning"
 BOOK_FOLDER = "books"
+TEMP_HTML_FILE = "temp_book.html"
+TIME_DELAY = 0.1
 
 headers = {
 	"User-Agent": "Mozilla/5.0"
 }
 
+toc = {
+    'toc-header-text': 'Table of Contents',
+}
 
-
+options = {
+	
+}
 
 def extract_chapter_slugs_and_ids(url):
     response = requests.get(url)
@@ -57,10 +65,9 @@ def extract_chapter_slugs_and_ids(url):
 
 
 
-
 # Function to extract the HTML content of each chapter
 def extract_chapter_html(chapter_url):
-    print(f"Extracting {chapter_url}")
+    # print(f"Extracting {chapter_url}")
     res = requests.get(chapter_url, headers=headers)
     res.raise_for_status()  # Ensure we notice bad responses
     soup = BeautifulSoup(res.text, "lxml")
@@ -75,31 +82,42 @@ def extract_chapter_html(chapter_url):
     return html
 
 
+
 # Main function to process all chapters and generate a PDF
 def main():
+    os.makedirs(BOOK_FOLDER, exist_ok=True)
     chapters = extract_chapter_slugs_and_ids(BOOK_URL)
 
     full_html = "<html><head><meta charset='UTF-8'></head><body>"
     
-    for slug, chapter_id in chapters:
+    for slug, chapter_id in tqdm(chapters, desc="Processing Chapters", unit="chapter"):
         chapter_url = f'{BOOK_URL}/chapter/{chapter_id}/{slug}'
         try:
+            # tqdm.write(f"Processing chapter: {slug}")
             chapter_html = extract_chapter_html(chapter_url)
             full_html += chapter_html + "<div style='page-break-after: always;'></div>"
         except Exception as e:
-            print(f"Failed to extract {chapter_url}: {e}")
-        time.sleep(0.5)  # Add delay to prevent overwhelming the server
+            tqdm.write(f"Failed to extract {chapter_url}: {e}")
+        time.sleep(TIME_DELAY)  # Add delay to prevent overwhelming the server
 
     full_html += "</body></html>"
 
-    # Save the HTML content to a file
-    # with open("book.html", "w", encoding="utf-8") as f:
-    #     f.write(full_html)
+    # Save HTML to a temporary file
+    with open(TEMP_HTML_FILE, "w", encoding="utf-8") as f:
+        f.write(full_html)
 
-    # Convert HTML to PDF
-    config = pdfkit.configuration(wkhtmltopdf="C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe")  # Adjust path if needed
-    # pdfkit.from_file("book.html", "books/Mother_of_Learning.pdf", configuration=config)
-    pdfkit.from_string(full_html, f"{BOOK_FOLDER}/{BOOK_NAME}.pdf", configuration=config)
+    # Convert HTML file to PDF with TOC
+    config = pdfkit.configuration(wkhtmltopdf="C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe")
+    pdfkit.from_file(
+        TEMP_HTML_FILE,
+        f"{BOOK_FOLDER}/{BOOK_NAME}.pdf",
+        configuration=config,
+        options=options,
+        toc=toc
+    )
+
+    # Remove the temporary HTML file
+    os.remove(TEMP_HTML_FILE)
     print(f"PDF created: {BOOK_NAME}.pdf")
 
 
