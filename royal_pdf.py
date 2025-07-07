@@ -8,8 +8,8 @@ from tqdm import tqdm
 import os
 
 ###################### CHANGE THESE #################################
-BOOK_URL = "https://www.royalroad.com/fiction/21220/mother-of-learning"
-BOOK_NAME = "Mother of Learning"
+BOOK_URL = "https://www.royalroad.com/fiction/82501/discordant-note-the-beginning-after-the-end-si"
+BOOK_NAME = "Discordant Note TBATE"
 WKHTMLTOPDF_PATH = "C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe"
 #####################################################################
 
